@@ -10,14 +10,12 @@ class AnalyserWindow(Ui_MainWindow):
         super().setupUi(MainWindow)
         self.sensorList = MudPy.getSensors_All()
         self.sensorTypeList = MudPy.getSensorTypes()
-        self.stepSizes = ['Hourly', 'Daily']
-        self.fillComboBoxes()
+        self._fillComboBoxes()
             
-    def fillComboBoxes(self):
-        self.fillComboBox(self.comboBoxSensorID, self.sensorList)
-        self.fillComboBox(self.comboBoxSensorType,  self.sensorTypeList)
-        self.fillComboBox(self.comboBoxStepSize,  self.stepSizes)
+    def _fillComboBoxes(self):
+        self._fillComboBox(self.comboBoxSensorID, self.sensorList)
+        self._fillComboBox(self.comboBoxSensorType,  self.sensorTypeList)
         
-    def fillComboBox(self,  comboBoxToFill, items):
+    def _fillComboBox(self,  comboBoxToFill, items):
         for item in items:
             comboBoxToFill.addItem(str(item))
