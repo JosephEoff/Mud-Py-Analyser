@@ -26,4 +26,9 @@ def getSensors_All():
     
 def getSensorTypes():
     return SensorDataType.objects.all()
+
+def getSensorDataType_Unit(sensorType):
+       return SensorDataType.objects.only('unit').get(typeName=sensorType).unit.abbreviatedName
     
+def getSensorData_Date_TimeRange(sensorID,  startDateTime,  endDateTime,  sensorType):    
+    return SensorData.objects.filter(timestamp__range=[startDateTime, endDateTime],  sensor__sensorID = sensorID,  datatype__typeName = sensorType).order_by('timestamp')

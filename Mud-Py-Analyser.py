@@ -5,7 +5,7 @@ from mainwindow import AnalyserWindow
     
 if __name__ == "__main__":
     QCoreApplication.setOrganizationName("JRE")
-    QCoreApplication.setApplicationName("Mud-py Analyser")
+    QCoreApplication.setApplicationName("Mud-Py Analyser")
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

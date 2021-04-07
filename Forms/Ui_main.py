@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file '/home/dev/GitHub/Mud-Py-Analyser/Forms/main.ui'
 #
