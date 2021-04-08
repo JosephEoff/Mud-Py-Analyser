@@ -21,6 +21,18 @@ from controlnode.models import ControlNodeDataType
 from controlnode.models import ControlNodeUnit
 
 
+def getControlNodes_All():
+    return ControlNode.objects.all()
+    
+def getControlNodeDataType():
+    return ControlNodeDataType.objects.all()
+    
+def getControlNodeDataType_Unit(nodeType):
+       return ControlNodeDataType.objects.only('unit').get(typeName=nodeType).unit.abbreviatedName
+
+def getControlNode_Date_TimeRange(controlNodeID,  startDateTime,  endDateTime,  nodeType):    
+    return ControlNodeData.objects.filter(timestamp__range=[startDateTime, endDateTime],  node__nodeid = controlNodeID,  datatype__typeName = nodeType).order_by('timestamp')
+
 def getSensors_All():
     return Sensor.objects.all()
     
