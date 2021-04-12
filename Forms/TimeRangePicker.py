@@ -2,6 +2,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget
 from Forms.Ui_timerangepicker import Ui_TimeRangePicker
 from Forms.StepSizes import StepSizeEnum
+from datetime import timedelta
 
 class TimeRangePicker( QWidget,  Ui_TimeRangePicker):
     def __init__(self, parent = None):
@@ -46,8 +47,21 @@ class TimeRangePicker( QWidget,  Ui_TimeRangePicker):
     def getStepSize(self):
         return self.self.comboBoxStepSize.currentData()   
         
+    def getTimeDelta(self):
+        if self.comboBoxStepSize.currentData() == StepSizeEnum.Hourly:
+            return timedelta(hours=1)
+        if self.comboBoxStepSize.currentData() == StepSizeEnum.Daily:
+            return timedelta(days=1)
+            
     def getStartDateTime(self):
         return self.dateTimeEditStart.dateTime().toPyDateTime()
         
     def getEndDateTime(self):
         return self.dateTimeEditEnd.dateTime().toPyDateTime()
+
+    def dateRangeGenerator(self):
+        delta = self.getTimeDelta()
+        start_date = self.getStartDateTime()
+        while start_date < self.getEndDateTime():
+            yield start_date
+            start_date += delta

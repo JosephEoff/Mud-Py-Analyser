@@ -3,10 +3,9 @@ from PyQt5.QtCore import QCoreApplication
 from Forms.Ui_main import Ui_MainWindow
 import pyqtgraph as pg
 import numpy as numpy
-from scipy import interpolate
 from scipy.interpolate import griddata
 import mud_py_API as MudPy
-import datetime
+from datetime import  timedelta
 
 class AnalyserWindow(Ui_MainWindow):
     def setupUi(self, MainWindow):
@@ -81,31 +80,46 @@ class AnalyserWindow(Ui_MainWindow):
         traceplot.setData(self._getArrayFromList(values))
     
     def  _drawPlotOfZoneSensorData(self):
-        selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, self.timeRangeZone.getStartDateTime(), self.timeRangeZone.getEndDateTime(),  self.comboBoxSensorTypeZone.currentData().id )
-        x = []
-        y = []
-        values = [] 
-        coords = []
-        for data in selectedSensorData.iterator():      
-            x.append(data.location.location.x)
-            y.append(data.location.location.y)
-            values.append(data.value)
-            coords.append([data.location.location.x, data.location.location.y])
-
-        if len(values) <16:
-            return
-        
-        #Need to replace the iterp2d with a simple collection of the maximum and minimum x and y
-        zoneInterpolator = interpolate.interp2d(x, y, values, kind='cubic',  fill_value = 0.0)
-        coordArray = self._getArrayFromList(coords)
-        grid_x, grid_y = numpy.mgrid[zoneInterpolator.x_min:zoneInterpolator.x_max:400j, zoneInterpolator.y_max:zoneInterpolator.y_min:400j]
-        smoothed = griddata(coordArray, values, (grid_x, grid_y), method='linear')
-        self.zonePlot.setImage(smoothed)
-        
+        frames = []
+        timestamps = []
+        for startTimeDate in self.timeRangeZone.dateRangeGenerator():
+            endTimeDate = startTimeDate + self.timeRangeZone.getTimeDelta()
+            selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, startTimeDate, endTimeDate,  self.comboBoxSensorTypeZone.currentData().id )
+            interpolated = self._getInterpolatedGridFromSelectedSensorData(selectedSensorData)
+            if not interpolated is None:
+                frames.append( interpolated)
+                timestamps.append(startTimeDate.timestamp())
+                
+        if len(frames) == 0:
+                return
+        frameArray = numpy.stack(frames, axis=0)
+        timeArray  = numpy.array(timestamps)
+        self.zonePlot.setImage(img = frameArray)#,  xvals = timeArray,  autoRange = True,  autoLevels = True)
         
     def _getArrayFromList(self, dataList):
         data = numpy.array(dataList)
         data = data[data[:,0].argsort()]
         return data
         
+    def _getInterpolatedGridFromSelectedSensorData(self, selectedSensorData):
+        x_min = self.comboBoxZone.currentData().boundary.extent[0]
+        x_max = self.comboBoxZone.currentData().boundary.extent[2]
+        y_min = self.comboBoxZone.currentData().boundary.extent[1]
+        y_max = self.comboBoxZone.currentData().boundary.extent[3]
+
+        values = [] 
+        coords = []
+        for data in selectedSensorData.iterator():      
+            values.append(data.value)
+            coords.append([data.location.location.x, data.location.location.y])
+        
+        if len(coords)== 0 or len (coords)<16:
+            return None
+            
+        coordArray = self._getArrayFromList(coords)        
+        grid_x, grid_y = numpy.mgrid[x_min:x_max:400j, y_max:y_min:400j]
+        interpolated = griddata(coordArray, values, (grid_x, grid_y), method='linear')
+        return interpolated
+
+
 
