@@ -58,6 +58,14 @@ class TimeRangePicker( QWidget,  Ui_TimeRangePicker):
         
     def getEndDateTime(self):
         return self.dateTimeEditEnd.dateTime().toPyDateTime()
+        
+    def getRangeGeneratorCount(self):
+        delta = self.getTimeDelta()
+        start_date = self.getStartDateTime()
+        end_date = self.getEndDateTime()
+        difference = end_date-start_date
+        count = int(difference/delta)
+        return count
 
     def dateRangeGenerator(self):
         delta = self.getTimeDelta()

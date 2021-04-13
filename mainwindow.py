@@ -21,12 +21,18 @@ class AnalyserWindow(Ui_MainWindow):
         self.sensorPlot.setAxisItems(axisItems = {'bottom': date_axis_sensor})   
         date_axis_controlNode = pg.DateAxisItem(orientation='bottom')
         self.controlNodePlot.setAxisItems(axisItems = {'bottom': date_axis_controlNode})   
+        self.zoneTimestamps = []
+        self._connectZonePlotEvents()
+    
         
-        
+    def _connectZonePlotEvents(self):
+        self.zonePlot.sigTimeChanged.connect(self._changeZonePlotTimeDisplay)
+    
     def _connectButtonEvents(self):
         self.pushButtonPlot.clicked.connect(self._on_ButtonPlotClicked)
         self.pushButtonPlotControlNode.clicked.connect(self._on_ButtonPlotControlNodeClicked)
         self.pushButtonPlotZone.clicked.connect(self._on_ButtonPlotZoneClicked)
+        self.pushButtonZonePlay.clicked.connect(self._onButtonZonePlayClicked)
         
     def _on_ButtonPlotControlNodeClicked(self):
         self._drawPlotOfControlNodeData()
@@ -36,6 +42,11 @@ class AnalyserWindow(Ui_MainWindow):
         
     def _on_ButtonPlotZoneClicked(self):
         self._drawPlotOfZoneSensorData()
+        
+    def _onButtonZonePlayClicked(self):
+        if len(self.zoneTimestamps)>0:
+            self.zonePlot.setCurrentIndex(0)
+            self.zonePlot.play(self.doubleSpinBoxZonePlayHoursPerSecond.value())
             
     def _fillComboBoxes(self):
         self._fillComboBox(self.comboBoxSensorID, self.sensorList)
@@ -79,22 +90,36 @@ class AnalyserWindow(Ui_MainWindow):
         traceplot = self.sensorPlot.plot([0], [0]) 
         traceplot.setData(self._getArrayFromList(values))
     
+    def _changeZonePlotTimeDisplay(self,  timeIndex,  timeValue):
+        if len(self.zoneTimestamps)<1:
+            return
+
+        self.labelZonePlotDateTime.setText(self.zoneTimestamps[timeIndex].isoformat(sep= ' '))
+    
     def  _drawPlotOfZoneSensorData(self):
         frames = []
-        timestamps = []
+        self.zoneTimestamps = []
+        count = 0
+        dateRangeCount = self.timeRangeZone.getRangeGeneratorCount()
+        progress = 0.0
         for startTimeDate in self.timeRangeZone.dateRangeGenerator():
+            if dateRangeCount>0:
+                progress = 100 * float(count)/float(dateRangeCount)
+                self.progressBarZonePlot.setValue(progress)
             endTimeDate = startTimeDate + self.timeRangeZone.getTimeDelta()
             selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, startTimeDate, endTimeDate,  self.comboBoxSensorTypeZone.currentData().id )
             interpolated = self._getInterpolatedGridFromSelectedSensorData(selectedSensorData)
+            count = count + 1
             if not interpolated is None:
                 frames.append( interpolated)
-                timestamps.append(startTimeDate.timestamp())
-                
+                self.zoneTimestamps.append(startTimeDate)
+        
+        self.progressBarZonePlot.setValue(0.0)
+        
         if len(frames) == 0:
                 return
         frameArray = numpy.stack(frames, axis=0)
-        timeArray  = numpy.array(timestamps)
-        self.zonePlot.setImage(img = frameArray)#,  xvals = timeArray,  autoRange = True,  autoLevels = True)
+        self.zonePlot.setImage(img = frameArray)
         
     def _getArrayFromList(self, dataList):
         data = numpy.array(dataList)
