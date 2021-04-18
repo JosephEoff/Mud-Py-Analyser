@@ -10,6 +10,9 @@ from datetime import  timedelta
 class AnalyserWindow(Ui_MainWindow):
     def setupUi(self, MainWindow):
         super().setupUi(MainWindow)
+        self.sensorPlot_Secondary.setVisible(False)
+        self.zonePlot_Secondary.setVisible(False)
+         
         self.sensorList = MudPy.getSensors_All()
         self.sensorTypeList = MudPy.getSensorTypes()
         self.controlNodeList = MudPy.getControlNodes_All()
@@ -23,8 +26,25 @@ class AnalyserWindow(Ui_MainWindow):
         self.controlNodePlot.setAxisItems(axisItems = {'bottom': date_axis_controlNode})   
         self.zoneTimestamps = []
         self._connectZonePlotEvents()
+        self._connectComboBoxEvents()
     
+    def _connectComboBoxEvents(self):
+        self.comboBoxSensorTypeZone_Secondary.currentIndexChanged.connect(self._switchSecondaryZoneDisplay) 
+        self.comboBoxSensorType_Secondary.currentIndexChanged.connect(self._switchSecondarySensorDisplay)  
         
+    def _switchSecondaryZoneDisplay(self,  index):
+        if index == 0:
+            self.zonePlot_Secondary.setVisible(False)
+        else:
+            self.zonePlot_Secondary.setVisible(True)
+        
+    def _switchSecondarySensorDisplay(self,  index):
+        if index == 0:
+            self.sensorPlot_Secondary.setVisible(False)
+        else:
+            self.sensorPlot_Secondary.setVisible(True)
+    
+    
     def _connectZonePlotEvents(self):
         self.zonePlot.sigTimeChanged.connect(self._changeZonePlotTimeDisplay)
     
@@ -55,15 +75,26 @@ class AnalyserWindow(Ui_MainWindow):
         self._fillComboBox(self.comboBoxControlNodeType, self.controlNodeTypesList)
         self._fillComboBox(self.comboBoxZone,  self.ZoneList)
         self._fillComboBox(self.comboBoxSensorTypeZone,  self.sensorTypeList)
+        self._fillComboBox_Secondary(self.comboBoxSensorType_Secondary,  self.sensorTypeList)
+        self._fillComboBox_Secondary(self.comboBoxSensorTypeZone_Secondary,  self.sensorTypeList)
         
     def _fillComboBox(self,  comboBoxToFill, items):
+        comboBoxToFill.clear()
         i = 0
         for item in items:
             comboBoxToFill.insertItem(i,  str(item),  item)
             i = i +1
             
+    def _fillComboBox_Secondary(self,  comboBoxToFill, items):
+        comboBoxToFill.clear()
+        comboBoxToFill.addItem('-')
+        i = 1
+        for item in items:
+            comboBoxToFill.insertItem(i,  str(item),  item)
+            i = i +1
+            
     def _drawPlotOfControlNodeData(self):
-        self.controlNodePlot.getPlotItem().setLabel('left',self.comboBoxControlNodeType.currentData().id,  units = MudPy.getControlNodeDataType_Unit(self.comboBoxControlNodeType.currentData().id))
+        self.controlNodePlot.getPlotItem().setLabel('left',self.comboBoxControlNodeType.currentText(),  units = MudPy.getControlNodeDataType_Unit(self.comboBoxControlNodeType.currentData().id))
         selectedcontrolNodeData = MudPy.getControlNode_Date_TimeRange( self.comboBoxControlNodeID.currentData().id,  self.timeRangeControlNode.getStartDateTime(), self.timeRangeControlNode.getEndDateTime(),  self.comboBoxControlNodeType.currentData().id)
         self.controlNodePlot.clear()
         values = []

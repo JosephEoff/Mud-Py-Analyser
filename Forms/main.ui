@@ -93,6 +93,12 @@
                     </item>
                     <item row="1" column="0">
                      <widget class="QLabel" name="labelValueType_3">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Value Type</string>
                       </property>
@@ -110,8 +116,37 @@
                     </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="labelZone">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Zone</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QComboBox" name="comboBoxSensorTypeZone_Secondary">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="labelValueType_Secondary">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>Secondary</string>
                       </property>
                      </widget>
                     </item>
@@ -231,6 +266,9 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="ImageView" name="zonePlot_Secondary"/>
+               </item>
               </layout>
              </widget>
             </item>
@@ -304,6 +342,12 @@
                     </item>
                     <item row="1" column="0">
                      <widget class="QLabel" name="labelValueType">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Value Type</string>
                       </property>
@@ -321,8 +365,37 @@
                     </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="labelSensorID">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Sensor ID</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QComboBox" name="comboBoxSensorType_Secondary">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_2">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>Secondary</string>
                       </property>
                      </widget>
                     </item>
@@ -371,14 +444,21 @@
              </widget>
             </item>
             <item>
-             <widget class="PlotWidget" name="sensorPlot">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="PlotWidget" name="sensorPlot">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="PlotWidget" name="sensorPlot_Secondary"/>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -444,6 +524,12 @@
                     </item>
                     <item row="1" column="0">
                      <widget class="QLabel" name="labelValueType_2">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Value Type</string>
                       </property>
@@ -461,6 +547,12 @@
                     </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="labelControlNodeID">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Control Node ID</string>
                       </property>
