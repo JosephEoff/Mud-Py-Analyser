@@ -126,11 +126,16 @@ class AnalyserWindow(Ui_MainWindow):
             return
 
         self.labelZonePlotDateTime.setText(self.zoneTimestamps[timeIndex].isoformat(sep= ' '))
-    
+        if self.zonePlot_Secondary.isVisible():
+            self.zonePlot_Secondary.setCurrentIndex(timeIndex)
+            
     def  _drawPlotOfZoneSensorData(self):
-        frames = []
+        framesPrimary = []
+        framesSecondary = []
         self.zoneTimestamps = []
         count = 0
+        lastPrimary = None
+        lastSecondary = None
         dateRangeCount = self.timeRangeZone.getRangeGeneratorCount()
         progress = 0.0
         for startTimeDate in self.timeRangeZone.dateRangeGenerator():
@@ -138,20 +143,35 @@ class AnalyserWindow(Ui_MainWindow):
                 progress = 100 * float(count)/float(dateRangeCount)
                 self.progressBarZonePlot.setValue(progress)
             endTimeDate = startTimeDate + self.timeRangeZone.getTimeDelta()
+            
+            self.zoneTimestamps.append(startTimeDate)
+           
             selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, startTimeDate, endTimeDate,  self.comboBoxSensorTypeZone.currentData().id )
-            interpolated = self._getInterpolatedGridFromSelectedSensorData(selectedSensorData)
-            count = count + 1
+            if len (selectedSensorData)>=16:
+                lastPrimary = selectedSensorData
+            interpolated = self._getInterpolatedGridFromSelectedSensorData(lastPrimary)            
             if not interpolated is None:
-                frames.append( interpolated)
-                self.zoneTimestamps.append(startTimeDate)
+                framesPrimary.append( interpolated)
+            
+            selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, startTimeDate, endTimeDate,  self.comboBoxSensorTypeZone_Secondary.currentData().id )
+            if len (selectedSensorData)>=16:
+                lastSecondary = selectedSensorData
+            interpolated = self._getInterpolatedGridFromSelectedSensorData(lastSecondary)            
+            if not interpolated is None:
+                framesSecondary.append( interpolated)
+                
+            count = count + 1
         
         self.progressBarZonePlot.setValue(0.0)
         
-        if len(frames) == 0:
-                return
-        frameArray = numpy.stack(frames, axis=0)
-        self.zonePlot.setImage(img = frameArray)
+        if len(framesPrimary) > 0:
+            frameArray = numpy.stack(framesPrimary, axis=0)
+            self.zonePlot.setImage(img = frameArray)
         
+        if len(framesSecondary)>=0:
+            frameArray = numpy.stack(framesSecondary, axis=0)
+            self.zonePlot_Secondary.setImage(img = frameArray)
+            
     def _getArrayFromList(self, dataList):
         data = numpy.array(dataList)
         data = data[data[:,0].argsort()]
