@@ -136,6 +136,7 @@ class AnalyserWindow(Ui_MainWindow):
         count = 0
         lastPrimary = None
         lastSecondary = None
+        interpolated = None
         dateRangeCount = self.timeRangeZone.getRangeGeneratorCount()
         progress = 0.0
         for startTimeDate in self.timeRangeZone.dateRangeGenerator():
@@ -147,16 +148,22 @@ class AnalyserWindow(Ui_MainWindow):
             self.zoneTimestamps.append(startTimeDate)
            
             selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, startTimeDate, endTimeDate,  self.comboBoxSensorTypeZone.currentData().id )
+            interpolated = None
             if len (selectedSensorData)>=16:
                 lastPrimary = selectedSensorData
-            interpolated = self._getInterpolatedGridFromSelectedSensorData(lastPrimary)            
+            if not lastPrimary is None:
+                interpolated = self._getInterpolatedGridFromSelectedSensorData(lastPrimary)            
             if not interpolated is None:
                 framesPrimary.append( interpolated)
             
-            selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, startTimeDate, endTimeDate,  self.comboBoxSensorTypeZone_Secondary.currentData().id )
+            selectedSensorData = []
+            if not self.comboBoxSensorTypeZone_Secondary.currentData() is None:
+                selectedSensorData = MudPy.getZoneSensorData_Date_TimeRange(self.comboBoxZone.currentData().id, startTimeDate, endTimeDate,  self.comboBoxSensorTypeZone_Secondary.currentData().id )
+            interpolated = None
             if len (selectedSensorData)>=16:
                 lastSecondary = selectedSensorData
-            interpolated = self._getInterpolatedGridFromSelectedSensorData(lastSecondary)            
+            if not lastSecondary is None:
+                interpolated = self._getInterpolatedGridFromSelectedSensorData(lastSecondary)            
             if not interpolated is None:
                 framesSecondary.append( interpolated)
                 
@@ -168,7 +175,7 @@ class AnalyserWindow(Ui_MainWindow):
             frameArray = numpy.stack(framesPrimary, axis=0)
             self.zonePlot.setImage(img = frameArray)
         
-        if len(framesSecondary)>=0:
+        if len(framesSecondary)>0:
             frameArray = numpy.stack(framesSecondary, axis=0)
             self.zonePlot_Secondary.setImage(img = frameArray)
             
@@ -194,7 +201,7 @@ class AnalyserWindow(Ui_MainWindow):
             
         coordArray = self._getArrayFromList(coords)        
         grid_x, grid_y = numpy.mgrid[x_min:x_max:400j, y_max:y_min:400j]
-        interpolated = griddata(coordArray, values, (grid_x, grid_y), method='linear')
+        interpolated = griddata(coordArray, values, (grid_x, grid_y), method='cubic')
         return interpolated
 
 

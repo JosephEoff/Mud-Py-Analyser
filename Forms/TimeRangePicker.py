@@ -71,5 +71,11 @@ class TimeRangePicker( QWidget,  Ui_TimeRangePicker):
         delta = self.getTimeDelta()
         start_date = self.getStartDateTime()
         while start_date < self.getEndDateTime():
-            yield start_date
-            start_date += delta
+            try:
+                yield start_date
+                start_date += delta
+            except:
+                start_date += delta
+                yield start_date
+                start_date += delta
+                
